@@ -208,10 +208,18 @@ def generate_grn_report(cookies: dict, outlets: list, email: str) -> bool:
 
 def run():
     creds_text = os.environ.get("SUPPLYNOTE_CREDENTIALS")
+    
+    if not creds_text:
+        # Fallback for local execution: read the .env file directly
+        local_env_path = Path(__file__).parent.parent / ".env"
+        if local_env_path.exists():
+            creds_text = local_env_path.read_text(encoding="utf-8")
+            log.info("Loaded credentials from local .env file.")
+
     target_account = os.environ.get("TARGET_ACCOUNT", "ALL").upper()
 
     if not creds_text:
-        log.error("SUPPLYNOTE_CREDENTIALS environment variable is not set.")
+        log.error("SUPPLYNOTE_CREDENTIALS environment variable is not set and local .env file was not found.")
         return
 
     accounts = parse_credentials(creds_text)
