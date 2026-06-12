@@ -2,6 +2,7 @@ import logging
 import os
 import sys
 import time
+import json
 import requests
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -160,6 +161,26 @@ def generate_grn_report(cookies: dict, outlets: list, email: str) -> bool:
                
     filter_list = [{"name": f, "selected": True} for f in filters]
 
+    options_dict = {
+        "fromDate": from_dt_utc,
+        "toDate": to_dt_utc,
+        "filterList": filter_list,
+        "outletListId": outlets,
+        "fromReport": True,
+        "interStockTransfer": True,
+        "intraStockTransfer": False,
+        "sendAll": True,
+        "skip": 0,
+        "limit": 15,
+        "timeZone": "Asia/Calcutta",
+        "job": {}
+    }
+
+    job_obj = {
+        "reportName": "itemWiseGRN",
+        "options": json.dumps(options_dict, separators=(',', ':'))
+    }
+
     payload = {
         "fromDate": from_dt_utc,
         "toDate": to_dt_utc,
@@ -172,10 +193,10 @@ def generate_grn_report(cookies: dict, outlets: list, email: str) -> bool:
         "skip": 0,
         "limit": 15,
         "timeZone": "Asia/Calcutta",
-        "job": {},
+        "job": job_obj,
         "action": "mail",
         "emails": [email],
-        "outlets": [] # Note: The API might expect the full outlets objects here, but often it just relies on outletListId. If it fails, we will need to fetch the full outlet objects instead of just id/name.
+        "outlets": [] 
     }
 
     resp = requests.post(REPORT_API, json=payload, headers=API_HEADERS, cookies=cookies, timeout=120)
