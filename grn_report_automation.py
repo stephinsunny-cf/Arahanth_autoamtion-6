@@ -178,7 +178,12 @@ def generate_grn_report(cookies: dict, outlets: list, email: str) -> bool:
 
     job_obj = {
         "reportName": "itemWiseGRN",
-        "options": json.dumps(options_dict, separators=(',', ':'))
+        "options": json.dumps(options_dict, separators=(',', ':')),
+        "action": "mail",
+        "emails": [email],
+        "fromDate": from_dt_utc,
+        "toDate": to_dt_utc,
+        "outlets": []
     }
 
     payload = {
@@ -193,10 +198,7 @@ def generate_grn_report(cookies: dict, outlets: list, email: str) -> bool:
         "skip": 0,
         "limit": 15,
         "timeZone": "Asia/Calcutta",
-        "job": job_obj,
-        "action": "mail",
-        "emails": [email],
-        "outlets": [] 
+        "job": job_obj
     }
 
     resp = requests.post(REPORT_API, json=payload, headers=API_HEADERS, cookies=cookies, timeout=120)
