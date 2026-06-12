@@ -185,11 +185,20 @@ def generate_grn_report(cookies: dict, outlets: list, email: str) -> bool:
 
 def run():
     creds_text = os.environ.get("SUPPLYNOTE_CREDENTIALS")
+    target_account = os.environ.get("TARGET_ACCOUNT", "ALL").upper()
+
     if not creds_text:
         log.error("SUPPLYNOTE_CREDENTIALS environment variable is not set.")
         return
 
     accounts = parse_credentials(creds_text)
+
+    if target_account != "ALL":
+        accounts = [acc for acc in accounts if acc.get("name", "").upper() == target_account]
+        if not accounts:
+            log.error(f"No credentials found for target account: {target_account}")
+            return
+
     log.info(f"Found {len(accounts)} accounts to process.")
 
     for account in accounts:

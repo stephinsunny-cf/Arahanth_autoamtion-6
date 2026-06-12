@@ -5,6 +5,19 @@ on:
     # Runs at 00:30 UTC every day (06:00 AM IST)
     - cron: '30 0 * * *'
   workflow_dispatch: # Allows manual trigger from the GitHub Actions UI
+    inputs:
+      account:
+        description: 'Select the account to test, or run ALL.'
+        required: true
+        default: 'ALL'
+        type: choice
+        options:
+          - ALL
+          - CFI
+          - CZ
+          - KK
+          - ME
+          - NP
 
 jobs:
   run-grn-reports:
@@ -31,5 +44,6 @@ jobs:
       env:
         # The credentials should be added to GitHub Secrets as SUPPLYNOTE_CREDENTIALS
         SUPPLYNOTE_CREDENTIALS: ${{ secrets.SUPPLYNOTE_CREDENTIALS }}
+        TARGET_ACCOUNT: ${{ github.event.inputs.account || 'ALL' }}
       run: |
         python grn_report_automation.py
