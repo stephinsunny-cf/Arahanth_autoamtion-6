@@ -136,12 +136,9 @@ def generate_grn_report(cookies: dict, outlets: list, email: str) -> bool:
     IST = timezone(timedelta(hours=5, minutes=30))
     now = datetime.now(IST)
     
-    # Yesterday 00:00:00 to Yesterday 23:59:59 (in IST, then format to UTC as required by API)
-    # The API payload had fromDate and toDate in UTC format.
-    yesterday = now - timedelta(days=1)
-    
-    from_dt_ist = yesterday.replace(hour=0, minute=0, second=0, microsecond=0)
-    to_dt_ist = yesterday.replace(hour=23, minute=59, second=59, microsecond=999000)
+    # 1st of the current month 00:00:00 to Today 23:59:59 (in IST, then format to UTC as required by API)
+    from_dt_ist = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    to_dt_ist = now.replace(hour=23, minute=59, second=59, microsecond=999000)
     
     from_dt_utc = from_dt_ist.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.000Z")
     to_dt_utc = to_dt_ist.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.000Z")
