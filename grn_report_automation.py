@@ -102,10 +102,11 @@ def fetch_user_data(cookies: dict) -> tuple:
     resp.raise_for_status()
     data = resp.json()
 
-    business_obj = data.get("buisness", {})
+    business_obj = data.get("buisness") or {}
     business_id = business_obj.get("_id", "") if isinstance(business_obj, dict) else str(business_obj)
     
-    email = data.get("email") or data.get("profile", {}).get("email") or "arahanth.yadav@curefoods.in"
+    profile_obj = data.get("profile") or {}
+    email = data.get("email") or profile_obj.get("email") or "arahanth.yadav@curefoods.in"
     
     allowed_ids = []
     for p in data.get("permissions", []):
